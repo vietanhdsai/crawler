@@ -11,6 +11,7 @@ from pathlib import Path
 from typing import Iterable
 from PIL import Image
 import numpy as np
+import json
 
 import torch
 
@@ -21,7 +22,6 @@ from datasets.coco import make_coco_transforms
 
 import matplotlib.pyplot as plt
 import time
-
 
 def box_cxcywh_to_xyxy(x):
     x_c, y_c, w, h = x.unbind(1)
@@ -129,6 +129,7 @@ def get_args_parser():
 
 @torch.no_grad()
 def infer(images_path, model, postprocessors, device, output_path):
+    bbox_dict = {}
     model.eval()
     duration = 0
     for img_sample in images_path:
@@ -204,6 +205,8 @@ def infer(images_path, model, postprocessors, device, output_path):
             bbox = bbox.reshape((4, 2))
             cv2.polylines(img, [bbox], True, (0, 255, 0), 2)
 
+        bbox_dict[filename] = bbox
+        
         # img_save_path = os.path.join(output_path, filename)
         # cv2.imwrite(img_save_path, img)
         cv2.imshow("img", img)
@@ -212,6 +215,8 @@ def infer(images_path, model, postprocessors, device, output_path):
         duration += infer_time
         print("Processing...{} ({:.3f}s)".format(filename, infer_time))
 
+    with open(output_path, 'w') as file:
+        json.dump(bbox_dict, file, indent=2)
     avg_duration = duration / len(images_path)
     print("Avg. Time: {:.3f}s".format(avg_duration))
 
@@ -219,8 +224,8 @@ def infer(images_path, model, postprocessors, device, output_path):
 if __name__ == "__main__":
     parser = argparse.ArgumentParser('DETR training and evaluation script', parents=[get_args_parser()])
     args = parser.parse_args()
-    if args.output_dir:
-        Path(args.output_dir).mkdir(parents=True, exist_ok=True)
+    # if args.output_dir:
+    #     Path(args.output_dir).mkdir(parents=True, exist_ok=True)
 
     device = torch.device(args.device)
 
