@@ -205,8 +205,8 @@ def infer(images_path, model, postprocessors, device, output_path):
             bbox = bbox.reshape((4, 2))
             cv2.polylines(img, [bbox], True, (0, 255, 0), 2)
 
-        bbox = bbox.tolist()
-        bbox_dict[filename] = bbox
+            bbox = bbox.tolist()
+            bbox_dict[filename] = bbox
         
         # img_save_path = os.path.join(output_path, filename)
         # cv2.imwrite(img_save_path, img)
