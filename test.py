@@ -192,7 +192,7 @@ def infer(images_path, model, postprocessors, device, output_path):
             continue
 
         img = np.array(orig_image)
-        img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        # img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
         for idx, box in enumerate(bboxes_scaled):
             bbox = box.cpu().data.numpy()
             bbox = bbox.astype(np.int32)
@@ -203,15 +203,15 @@ def infer(images_path, model, postprocessors, device, output_path):
                 [bbox[0], bbox[3]],
                 ])
             bbox = bbox.reshape((4, 2))
-            cv2.polylines(img, [bbox], True, (0, 255, 0), 2)
+            # cv2.polylines(img, [bbox], True, (0, 255, 0), 2)
 
             bbox = bbox.tolist()
             bbox_dict[filename] = bbox
         
         # img_save_path = os.path.join(output_path, filename)
         # cv2.imwrite(img_save_path, img)
-        cv2.imshow("img", img)
-        cv2.waitKey()
+        # cv2.imshow("img", img)
+        # cv2.waitKey()
         infer_time = end_t - start_t
         duration += infer_time
         print("Processing...{} ({:.3f}s)".format(filename, infer_time))
